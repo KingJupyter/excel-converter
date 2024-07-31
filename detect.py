@@ -15,7 +15,8 @@ def clean_date_format(date_string):
         "%Y-%m-%d",        # e.g., 2024-07-31
         "%d-%m-%Y",        # e.g., 31-07-2024
         "%Y/%m/%d",        # e.g., 2024/07/31
-        "%d/%m/%Y"         # e.g., 31/07/2024
+        "%d/%m/%Y",         # e.g., 31/07/2024
+        "%m/%d/%Y"         # e.g., 12/27/2024
     ]
     
     for fmt in formats:
@@ -60,7 +61,11 @@ def clean_symbol_format(symbol_string):
         return symbol_string.upper()
 
 def clean_quantity_format(quantity_string):
-    return str(int(quantity_string))
+    try:
+        quantity_float = float(quantity_string)
+        return str(quantity_float)
+    except ValueError:
+        return None
 
 def clean_price_format(price_string):
     remove_currency = price_string.replace("$", "")
@@ -71,93 +76,165 @@ def clean_commission_format(commission_string):
     return f"{float(remove_currency):.2f}"
 
 def clean_action_format(action_string):
-    if "buy" in action_string or "bought" in action_string or "Buy" in action_string:
-        return "Buy"
-    elif "sell" in action_string or "sold" in action_string or "Sell" in action_string:
-        return "Sell"
+    if 'buy' in action_string or 'bought' in action_string or 'Buy' in action_string or 'Bought' in action_string:
+        return 'Buy'
+    elif 'sell' in action_string or 'sold' in action_string or 'Sell' in action_string or 'Sold' in action_string:
+        return 'Sell'
+
+# def extract_table_from_excel(file_path):
+#     if file_path.split('.')[-1] == "csv":
+#         df = pd.read_csv(file_path, header=None)
+#         df.to_excel(''.join(file_path.split('.')[:-1]) + '.xlsx', index=False, header=False)
+#         excel_data = pd.ExcelFile(''.join(file_path.split('.')[:-1]) + '.xlsx')
+#     else:
+#         excel_data = pd.ExcelFile(file_path)
+
+#     # Print sheet names to understand the structure
+#     print(f"Sheet names: {excel_data.sheet_names}")
+
+#     # Iterate through sheets
+#     for sheet_name in excel_data.sheet_names:
+#         df = excel_data.parse(sheet_name)
+#         print(f"\nAnalyzing sheet: {sheet_name}")
+
+#         # # Display the first few rows to get a sense of the data
+#         # print(df.head())
+
+#         # Detect non-empty cells
+#         not_empty_cells = df.notnull().astype(int)
+        
+#         # Display non-empty cells
+#         # print("Non-empty cells (binary representation):")
+#         # print(not_empty_cells)
+
+#         # Identify potential tables by finding contiguous blocks of non-empty cells
+
+#         potential_tables = []
+#         current_table = None
+
+#         for row_index, row in not_empty_cells.iterrows():
+#             row_sum = row.sum()
+#             if row_sum > 0 and current_table is None:
+#                 # Start of a new table
+#                 current_table = {"start_row": row_index, "end_row": row_index}
+#             elif row_sum == 0 and current_table is not None:
+#                 # End of the current table
+#                 current_table["end_row"] = row_index - 1
+#                 potential_tables.append(current_table)
+#                 current_table = None
+        
+#         # Handle the case where the last row contains non-empty cells
+#         if current_table is not None and current_table not in potential_tables:
+#             current_table["end_row"] = len(not_empty_cells) - 1
+#             potential_tables.append(current_table)
+
+#         # Output the detected tables
+#         for i, table in enumerate(potential_tables):
+#             start_row = table["start_row"]
+#             end_row = table["end_row"]
+#             table_df = df.iloc[start_row:end_row + 1]
+#             print(f"\nDetected Table {i+1}: Rows {start_row} to {end_row}")
+    
+#     return table_df
 
 def extract_table_from_excel(file_path):
+    skip_num = 0
+    header_to_skip = True
+
+    while header_to_skip:
+        if file_path.split('.')[-1] == "csv":
+            df = pd.read_csv(file_path, skiprows=skip_num)
+        elif file_path.split('.')[-1] == "xlsx":
+            df = pd.read_excel(file_path, skiprows=skip_num)
+        else:
+            return "Invalid file type"
+
+        header_to_skip = False
+        for col in df.columns:
+            if "For Account" in col or "Unnamed:" in col:
+                header_to_skip = True
+                break
+        
+        skip_num += 1
+
     if file_path.split('.')[-1] == "csv":
-        df = pd.read_csv(file_path, header=None)
-        df.to_excel(''.join(file_path.split('.')[:-1]) + '.xlsx', index=False, header=False)
-        excel_data = pd.ExcelFile(''.join(file_path.split('.')[:-1]) + '.xlsx')
-    else:
-        excel_data = pd.ExcelFile(file_path)
+        df = pd.read_csv(file_path, skiprows=skip_num - 1)
+    elif file_path.split('.')[-1] == "xlsx":
+        df = pd.read_excel(file_path, skiprows=skip_num - 1)
 
-    # Print sheet names to understand the structure
-    print(f"Sheet names: {excel_data.sheet_names}")
+    # Detect non-empty cells
+    not_empty_cells = df.notnull().astype(int)
+    
+    potential_tables = []
+    current_table = None
 
-    # Iterate through sheets
-    for sheet_name in excel_data.sheet_names:
-        df = excel_data.parse(sheet_name)
-        print(f"\nAnalyzing sheet: {sheet_name}")
-
-        # # Display the first few rows to get a sense of the data
-        # print(df.head())
-
-        # Detect non-empty cells
-        not_empty_cells = df.notnull().astype(int)
-        
-        # Display non-empty cells
-        # print("Non-empty cells (binary representation):")
-        # print(not_empty_cells)
-
-        # Identify potential tables by finding contiguous blocks of non-empty cells
-
-        potential_tables = []
-        current_table = None
-
-        for row_index, row in not_empty_cells.iterrows():
-            row_sum = row.sum()
-            if row_sum > 0 and current_table is None:
-                # Start of a new table
-                current_table = {"start_row": row_index, "end_row": row_index}
-            elif row_sum == 0 and current_table is not None:
-                # End of the current table
-                current_table["end_row"] = row_index - 1
-                potential_tables.append(current_table)
-                current_table = None
-        
-        # Handle the case where the last row contains non-empty cells
-        if current_table is not None and current_table not in potential_tables:
-            current_table["end_row"] = len(not_empty_cells) - 1
+    for row_index, row in not_empty_cells.iterrows():
+        row_sum = row.sum()
+        if row_sum > 0 and current_table is None:
+            # Start of a new table
+            current_table = {"start_row": row_index, "end_row": row_index}
+        elif row_sum == 0 and current_table is not None:
+            # End of the current table
+            current_table["end_row"] = row_index - 1
             potential_tables.append(current_table)
+            current_table = None
+    
+    # Handle the case where the last row contains non-empty cells
+    if current_table is not None and current_table not in potential_tables:
+        current_table["end_row"] = len(not_empty_cells) - 1
+        potential_tables.append(current_table)
 
-        # Output the detected tables
-        for i, table in enumerate(potential_tables):
-            start_row = table["start_row"]
-            end_row = table["end_row"]
-            table_df = df.iloc[start_row:end_row + 1]
-            print(f"\nDetected Table {i+1}: Rows {start_row} to {end_row}")
+    # Output the detected tables
+    for i, table in enumerate(potential_tables):
+        start_row = table["start_row"]
+        end_row = table["end_row"]
+        table_df = df.iloc[start_row:end_row + 1]
+        print(f"\nDetected Table {i+1}: Rows {start_row} to {end_row}")
     
     return table_df
 
-def process_column_data(trading_date_column):
+def process_column_data(date_column, function):
     date_list = []
-    for item in trading_date_column:
-        date_list.append(clean_date_format(item))
+    for item in date_column:
+        date_list.append(function(str(item)))
     return date_list
 
+def complete_column(table_df, search_key, function, column):
+    trade_date_columns = []
+    for col in table_df.columns:
+        for key in search_key:
+            if key in col:
+                trade_date_columns.append(col)
 
+    if trade_date_columns:
+        print(f"Columns containing {search_key}: {trade_date_columns}")
+        for col in trade_date_columns:
+            print(f"Processing column: {col}")
+            date_list = process_column_data(table_df[col], function)
+            start_row = 2
+            for item in date_list:
+                sheet.cell(row=start_row, column=column).value = item
+                start_row += 1
+    else:
+        print(f"No columns containing {search_key} found")
 
 if __name__ == "__main__":
-    file_path = 'trader sample/1.xlsx'
-
+    file_path = 'testing/etrade/2024_Etrade_v1 (1).csv'
     table_df = extract_table_from_excel(file_path)
-    if 'trade_date' in table_df.columns:
-        print("'trade_date' column found")
-        
-        # Get the column data
-        trading_date_column = table_df['trade_date']
-        
-        # Run the function with the column data as input parameter
-        date_list = process_column_data(trading_date_column)
-        start_row = 2
-        for item in date_list:
-            sheet.cell(row=start_row, column=1).value = item
-            start_row += 1
-        wb.save("how.xlsx")
-    else:
-        print("'trade_date' column not found")
+    print(table_df)
 
-
+    check_date_list = ['trade_date', 'TransactionDate']
+    check_time_list = ['time']
+    check_symbol_list = ['symbol', 'Symbol']
+    check_quantity_list = ['quantity', 'Quantity']
+    check_price_list = ['price', 'Price']
+    check_commission_list = ['commission', 'Commission']
+    check_action_list = ['side_direction', 'TransactionType']
+    complete_column(table_df, check_date_list, clean_date_format, 1)
+    complete_column(table_df, check_time_list, clean_time_format, 2)
+    complete_column(table_df, check_symbol_list, clean_symbol_format, 3)
+    complete_column(table_df, check_quantity_list, clean_quantity_format, 4)
+    complete_column(table_df, check_price_list, clean_price_format, 5)
+    complete_column(table_df, check_commission_list, clean_commission_format, 6)
+    complete_column(table_df, check_action_list, clean_action_format, 7)
+    wb.save("result.xlsx")
