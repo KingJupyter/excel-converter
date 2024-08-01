@@ -214,9 +214,9 @@ def extract_table_from_excel(file_path):
     
     return table_df
 
-def process_column_data(date_column, function):
+def process_column_data(data_column, function):
     data_list = []
-    for item in date_column:
+    for item in data_column:
         data_list.append(function(str(item)))
     return data_list
 
