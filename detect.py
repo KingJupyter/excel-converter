@@ -11,6 +11,9 @@ for item in range(len(header_list)):
     sheet.cell(row=1, column=item + 1).value = header_list[item]
 
 def clean_date_format(date_string):
+    if "as of" in date_string:
+        date_string = date_string.split(" as of ")[1]
+    
     formats = [
         "%Y-%m-%d",        # e.g., 2024-07-31
         "%d-%m-%Y",        # e.g., 31-07-2024
@@ -44,38 +47,56 @@ def clean_date_format(date_string):
 
 def clean_time_format(time_string):
     try:
-        # Parse the time string
+        input_format = "%m/%d/%Y %H:%M:%S:%f"
+        date_object = datetime.strptime(time_string, input_format)
+        formatted_time = date_object.strftime("%H:%M:%S").upper()
+        return formatted_time
+    except:
+        pass
+
+    try:
         parsed_time = parser.parse(time_string)
-        
-        # Format the time as HH:MM:SS
         formatted_time = parsed_time.strftime("%H:%M:%S")
-        
         return formatted_time
     except ValueError:
         return "Invalid time format"
 
 def clean_symbol_format(symbol_string):
+    if symbol_string == 'nan':
+        return ''
+    
     if symbol_string.isupper():
         return symbol_string
     else:
         return symbol_string.upper()
 
 def clean_quantity_format(quantity_string):
+    if quantity_string == 'nan':
+        return ''
     try:
-        quantity_float = float(quantity_string)
+        quantity_float = float(quantity_string.replace(',', ''))
         return str(quantity_float)
     except ValueError:
         return None
 
 def clean_price_format(price_string):
+    if price_string == 'nan':
+        return ''
+    
     remove_currency = price_string.replace("$", "")
     return f"{float(remove_currency):.2f}"
 
 def clean_commission_format(commission_string):
+    if commission_string == 'nan':
+        return ''
+    
     remove_currency = commission_string.replace("$", "")
     return f"{float(remove_currency):.2f}"
 
 def clean_action_format(action_string):
+    if action_string == 'nan':
+        return ''
+    
     if 'buy' in action_string or 'bought' in action_string or 'Buy' in action_string or 'Bought' in action_string:
         return 'Buy'
     elif 'sell' in action_string or 'sold' in action_string or 'Sell' in action_string or 'Sold' in action_string:
@@ -203,7 +224,7 @@ def complete_column(table_df, search_key, function, column):
     trade_date_columns = []
     for col in table_df.columns:
         for key in search_key:
-            if key in col:
+            if key == col:
                 trade_date_columns.append(col)
 
     if trade_date_columns:
@@ -219,17 +240,17 @@ def complete_column(table_df, search_key, function, column):
         print(f"No columns containing {search_key} found")
 
 if __name__ == "__main__":
-    file_path = 'testing/etrade/2024_Etrade_v1 (1).csv'
+    file_path = 'testing/etrade/2022_Etrade_v1 (1).csv'
     table_df = extract_table_from_excel(file_path)
     print(table_df)
 
-    check_date_list = ['trade_date', 'TransactionDate']
-    check_time_list = ['time']
-    check_symbol_list = ['symbol', 'Symbol']
+    check_date_list = ['trade_date', 'TransactionDate', 'Date', 'TD']
+    check_time_list = ['time', 'Activity Time']
+    check_symbol_list = ['instrument.cns_equity_master.symbol', 'Symbol']
     check_quantity_list = ['quantity', 'Quantity']
     check_price_list = ['price', 'Price']
-    check_commission_list = ['commission', 'Commission']
-    check_action_list = ['side_direction', 'TransactionType']
+    check_commission_list = ['fee_commission', 'Commission', 'Fees & Comm']
+    check_action_list = ['side_direction', 'TransactionType', 'Action', 'Transaction']
     complete_column(table_df, check_date_list, clean_date_format, 1)
     complete_column(table_df, check_time_list, clean_time_format, 2)
     complete_column(table_df, check_symbol_list, clean_symbol_format, 3)

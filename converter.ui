@@ -134,7 +134,7 @@
   <connection>
    <sender>close_btn</sender>
    <signal>clicked()</signal>
-   <receiver>dialog</receiver>
+   <receiver>Dialog</receiver>
    <slot>close()</slot>
    <hints>
     <hint type="sourcelabel">
