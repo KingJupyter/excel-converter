@@ -215,25 +215,25 @@ def extract_table_from_excel(file_path):
     return table_df
 
 def process_column_data(date_column, function):
-    date_list = []
+    data_list = []
     for item in date_column:
-        date_list.append(function(str(item)))
-    return date_list
+        data_list.append(function(str(item)))
+    return data_list
 
 def complete_column(table_df, search_key, function, column):
-    trade_date_columns = []
+    match_data_columns = []
     for col in table_df.columns:
         for key in search_key:
             if key == col:
-                trade_date_columns.append(col)
+                match_data_columns.append(col)
 
-    if trade_date_columns:
-        print(f"Columns containing {search_key}: {trade_date_columns}")
-        for col in trade_date_columns:
+    if match_data_columns:
+        print(f"Columns containing {search_key}: {match_data_columns}")
+        for col in match_data_columns:
             print(f"Processing column: {col}")
-            date_list = process_column_data(table_df[col], function)
+            data_list = process_column_data(table_df[col], function)
             start_row = 2
-            for item in date_list:
+            for item in data_list:
                 sheet.cell(row=start_row, column=column).value = item
                 start_row += 1
     else:
