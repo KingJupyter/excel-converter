@@ -69,17 +69,19 @@ class MainWindow(QMainWindow):
             QMessageBox.warning(self, "Warning", "Please import an Excel or CSV file.")
             return
         
-        if self.ui.output_name.text() == "":
-            QMessageBox.warning(self, "Warning", "Please enter the output file name !")
-            return
-
         self.file_path = self.ui.files.item(0).text()
-        self.output_file_name = self.ui.output_name.text()
         
         # Check if the file is an Excel or CSV file
         if not (self.file_path.endswith('.xlsx') or self.file_path.endswith('.xls') or self.file_path.endswith('.csv')):
             QMessageBox.warning(self, "Warning", "Unsupported file type! Please import an Excel or CSV file.")
+            self.ui.files.clear()
             return
+        
+        if self.ui.output_name.text() == "":
+            QMessageBox.warning(self, "Warning", "Please enter the output file name !")
+            return
+
+        self.output_file_name = self.ui.output_name.text()
         
         self.ui.convert_btn.setEnabled(False)
         self.ui.import_btn.setEnabled(False)
