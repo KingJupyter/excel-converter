@@ -35,7 +35,12 @@ class Worker(QThread):
             complete_column(table_df, check_price_list, clean_price_format, 5)
             complete_column(table_df, check_commission_list, clean_commission_format, 6)
             complete_column(table_df, check_action_list, clean_action_format, 7)
-            wb.save(f"{self.output_file_name}.xlsx")
+            
+            output_file_path = self.output_file_name + ".xlsx"
+            wb.save(output_file_path)
+
+            generate_final_result(output_file_path)
+
         except Exception as e:
             self.alert_signal.emit(str(e))
         
@@ -86,7 +91,7 @@ class MainWindow(QMainWindow):
         self.ui.convert_btn.setEnabled(False)
         self.ui.import_btn.setEnabled(False)
 
-        sleep(3)
+        sleep(1)
 
         self.worker = Worker(self.file_path, self.output_file_name)
         self.worker.finished.connect(self.on_finished)

@@ -102,62 +102,6 @@ def clean_action_format(action_string):
     elif 'sell' in action_string or 'sold' in action_string or 'Sell' in action_string or 'Sold' in action_string:
         return 'Sell'
 
-# def extract_table_from_excel(file_path):
-#     if file_path.split('.')[-1] == "csv":
-#         df = pd.read_csv(file_path, header=None)
-#         df.to_excel(''.join(file_path.split('.')[:-1]) + '.xlsx', index=False, header=False)
-#         excel_data = pd.ExcelFile(''.join(file_path.split('.')[:-1]) + '.xlsx')
-#     else:
-#         excel_data = pd.ExcelFile(file_path)
-
-#     # Print sheet names to understand the structure
-#     print(f"Sheet names: {excel_data.sheet_names}")
-
-#     # Iterate through sheets
-#     for sheet_name in excel_data.sheet_names:
-#         df = excel_data.parse(sheet_name)
-#         print(f"\nAnalyzing sheet: {sheet_name}")
-
-#         # # Display the first few rows to get a sense of the data
-#         # print(df.head())
-
-#         # Detect non-empty cells
-#         not_empty_cells = df.notnull().astype(int)
-        
-#         # Display non-empty cells
-#         # print("Non-empty cells (binary representation):")
-#         # print(not_empty_cells)
-
-#         # Identify potential tables by finding contiguous blocks of non-empty cells
-
-#         potential_tables = []
-#         current_table = None
-
-#         for row_index, row in not_empty_cells.iterrows():
-#             row_sum = row.sum()
-#             if row_sum > 0 and current_table is None:
-#                 # Start of a new table
-#                 current_table = {"start_row": row_index, "end_row": row_index}
-#             elif row_sum == 0 and current_table is not None:
-#                 # End of the current table
-#                 current_table["end_row"] = row_index - 1
-#                 potential_tables.append(current_table)
-#                 current_table = None
-        
-#         # Handle the case where the last row contains non-empty cells
-#         if current_table is not None and current_table not in potential_tables:
-#             current_table["end_row"] = len(not_empty_cells) - 1
-#             potential_tables.append(current_table)
-
-#         # Output the detected tables
-#         for i, table in enumerate(potential_tables):
-#             start_row = table["start_row"]
-#             end_row = table["end_row"]
-#             table_df = df.iloc[start_row:end_row + 1]
-#             print(f"\nDetected Table {i+1}: Rows {start_row} to {end_row}")
-    
-#     return table_df
-
 def extract_table_from_excel(file_path):
     skip_num = 0
     header_to_skip = True
@@ -239,8 +183,13 @@ def complete_column(table_df, search_key, function, column):
     else:
         print(f"No columns containing {search_key} found")
 
+def generate_final_result(file_path):
+    df = pd.read_excel(file_path)
+    df_cleaned = df.dropna(subset=['Action'])
+    df_cleaned.to_excel(file_path, index=False)
+
 if __name__ == "__main__":
-    file_path = 'testing/etrade/2022_Etrade_v1 (1).csv'
+    file_path = '../testing/etrade/2022_Etrade_v1 (1).csv'
     table_df = extract_table_from_excel(file_path)
     print(table_df)
 
@@ -258,4 +207,8 @@ if __name__ == "__main__":
     complete_column(table_df, check_price_list, clean_price_format, 5)
     complete_column(table_df, check_commission_list, clean_commission_format, 6)
     complete_column(table_df, check_action_list, clean_action_format, 7)
-    wb.save("result.xlsx")
+    
+    output_file_path = "result.xlsx"
+    wb.save(output_file_path)
+
+    generate_final_result(output_file_path)
