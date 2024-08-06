@@ -2,22 +2,30 @@
 <ui version="4.0">
  <class>Dialog</class>
  <widget class="QDialog" name="Dialog">
+  <property name="enabled">
+   <bool>true</bool>
+  </property>
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>690</width>
-    <height>305</height>
+    <width>679</width>
+    <height>587</height>
    </rect>
   </property>
+  <property name="font">
+   <font>
+    <kerning>false</kerning>
+   </font>
+  </property>
   <property name="windowTitle">
-   <string>Excel Converter</string>
+   <string>CSV Parser</string>
   </property>
   <widget class="QPushButton" name="convert_btn">
    <property name="geometry">
     <rect>
      <x>280</x>
-     <y>200</y>
+     <y>510</y>
      <width>141</width>
      <height>51</height>
     </rect>
@@ -26,6 +34,7 @@
     <font>
      <family>Yu Gothic Light</family>
      <pointsize>17</pointsize>
+     <kerning>false</kerning>
     </font>
    </property>
    <property name="text">
@@ -36,7 +45,7 @@
    <property name="geometry">
     <rect>
      <x>490</x>
-     <y>200</y>
+     <y>510</y>
      <width>131</width>
      <height>51</height>
     </rect>
@@ -45,27 +54,18 @@
     <font>
      <family>Yu Gothic Light</family>
      <pointsize>17</pointsize>
+     <kerning>false</kerning>
     </font>
    </property>
    <property name="text">
     <string>Close</string>
    </property>
   </widget>
-  <widget class="QListWidget" name="files">
-   <property name="geometry">
-    <rect>
-     <x>200</x>
-     <y>50</y>
-     <width>391</width>
-     <height>51</height>
-    </rect>
-   </property>
-  </widget>
   <widget class="QPushButton" name="import_btn">
    <property name="geometry">
     <rect>
      <x>60</x>
-     <y>200</y>
+     <y>510</y>
      <width>141</width>
      <height>51</height>
     </rect>
@@ -74,59 +74,237 @@
     <font>
      <family>Yu Gothic Light</family>
      <pointsize>17</pointsize>
+     <kerning>false</kerning>
     </font>
    </property>
    <property name="text">
     <string>Import File...</string>
    </property>
   </widget>
-  <widget class="QLineEdit" name="output_name">
+  <widget class="QGroupBox" name="input_label">
    <property name="geometry">
     <rect>
-     <x>290</x>
-     <y>140</y>
-     <width>261</width>
-     <height>31</height>
+     <x>90</x>
+     <y>10</y>
+     <width>491</width>
+     <height>91</height>
     </rect>
    </property>
+   <property name="font">
+    <font>
+     <family>Yu Gothic Light</family>
+     <pointsize>14</pointsize>
+     <kerning>false</kerning>
+    </font>
+   </property>
+   <property name="title">
+    <string>Input file</string>
+   </property>
+   <widget class="QListWidget" name="files">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>30</y>
+      <width>451</width>
+      <height>51</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Yu Gothic Light</family>
+      <pointsize>12</pointsize>
+      <kerning>false</kerning>
+     </font>
+    </property>
+   </widget>
   </widget>
-  <widget class="QLabel" name="label">
+  <widget class="QGroupBox" name="output_label">
+   <property name="geometry">
+    <rect>
+     <x>170</x>
+     <y>420</y>
+     <width>331</width>
+     <height>71</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>Yu Gothic Light</family>
+     <pointsize>12</pointsize>
+     <kerning>false</kerning>
+    </font>
+   </property>
+   <property name="title">
+    <string>Output file name</string>
+   </property>
+   <widget class="QLineEdit" name="output_name">
+    <property name="geometry">
+     <rect>
+      <x>30</x>
+      <y>30</y>
+      <width>271</width>
+      <height>31</height>
+     </rect>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QGroupBox" name="groupBox">
    <property name="geometry">
     <rect>
      <x>130</x>
-     <y>140</y>
-     <width>151</width>
-     <height>31</height>
+     <y>120</y>
+     <width>411</width>
+     <height>281</height>
     </rect>
    </property>
    <property name="font">
     <font>
-     <family>Yu Gothic Light</family>
-     <pointsize>14</pointsize>
+     <family>Yu Gothic UI Light</family>
+     <pointsize>13</pointsize>
+     <kerning>false</kerning>
     </font>
    </property>
-   <property name="text">
-    <string>Output file name</string>
+   <property name="title">
+    <string>Column Name</string>
    </property>
-  </widget>
-  <widget class="QLabel" name="label_2">
-   <property name="geometry">
-    <rect>
-     <x>100</x>
-     <y>60</y>
-     <width>81</width>
-     <height>31</height>
-    </rect>
-   </property>
-   <property name="font">
-    <font>
-     <family>Yu Gothic Light</family>
-     <pointsize>14</pointsize>
-    </font>
-   </property>
-   <property name="text">
-    <string>Input file</string>
-   </property>
+   <widget class="QWidget" name="">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>40</y>
+      <width>371</width>
+      <height>231</height>
+     </rect>
+    </property>
+    <layout class="QFormLayout" name="formLayout">
+     <item row="0" column="0">
+      <widget class="QLabel" name="label">
+       <property name="font">
+        <font>
+         <family>Times New Roman</family>
+         <pointsize>13</pointsize>
+         <italic>true</italic>
+         <kerning>false</kerning>
+        </font>
+       </property>
+       <property name="text">
+        <string>Date</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QLineEdit" name="date_column"/>
+     </item>
+     <item row="1" column="0">
+      <widget class="QLabel" name="label_2">
+       <property name="font">
+        <font>
+         <family>Times New Roman</family>
+         <pointsize>13</pointsize>
+         <italic>true</italic>
+         <kerning>false</kerning>
+        </font>
+       </property>
+       <property name="text">
+        <string>Time</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1">
+      <widget class="QLineEdit" name="time_column"/>
+     </item>
+     <item row="2" column="0">
+      <widget class="QLabel" name="label_4">
+       <property name="font">
+        <font>
+         <family>Times New Roman</family>
+         <pointsize>13</pointsize>
+         <italic>true</italic>
+         <kerning>false</kerning>
+        </font>
+       </property>
+       <property name="text">
+        <string>Symbol</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="1">
+      <widget class="QLineEdit" name="symbol_column"/>
+     </item>
+     <item row="3" column="0">
+      <widget class="QLabel" name="label_3">
+       <property name="font">
+        <font>
+         <family>Times New Roman</family>
+         <pointsize>13</pointsize>
+         <italic>true</italic>
+         <kerning>false</kerning>
+        </font>
+       </property>
+       <property name="text">
+        <string>Quantity</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="1">
+      <widget class="QLineEdit" name="quantity_column"/>
+     </item>
+     <item row="4" column="0">
+      <widget class="QLabel" name="label_6">
+       <property name="font">
+        <font>
+         <family>Times New Roman</family>
+         <pointsize>13</pointsize>
+         <italic>true</italic>
+         <kerning>false</kerning>
+        </font>
+       </property>
+       <property name="text">
+        <string>Price</string>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="1">
+      <widget class="QLineEdit" name="price_column"/>
+     </item>
+     <item row="5" column="0">
+      <widget class="QLabel" name="label_7">
+       <property name="font">
+        <font>
+         <family>Times New Roman</family>
+         <pointsize>13</pointsize>
+         <italic>true</italic>
+         <kerning>false</kerning>
+        </font>
+       </property>
+       <property name="text">
+        <string>Commission</string>
+       </property>
+      </widget>
+     </item>
+     <item row="5" column="1">
+      <widget class="QLineEdit" name="commission_column"/>
+     </item>
+     <item row="6" column="0">
+      <widget class="QLabel" name="label_5">
+       <property name="font">
+        <font>
+         <family>Times New Roman</family>
+         <pointsize>13</pointsize>
+         <italic>true</italic>
+         <kerning>false</kerning>
+        </font>
+       </property>
+       <property name="text">
+        <string>Action</string>
+       </property>
+      </widget>
+     </item>
+     <item row="6" column="1">
+      <widget class="QLineEdit" name="action_column"/>
+     </item>
+    </layout>
+   </widget>
   </widget>
  </widget>
  <resources/>

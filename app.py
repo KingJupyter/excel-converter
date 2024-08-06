@@ -11,30 +11,24 @@ class Worker(QThread):
     finished = pyqtSignal()
     alert_signal = pyqtSignal(str)
 
-    def __init__(self, file_path, output_file_name, parent=None):
+    def __init__(self, file_path, output_file_name, column_list, parent=None):
         super().__init__(parent)
         self.file_path = file_path
         self.output_file_name = output_file_name
+        self.column_list = column_list
 
     def run(self):
         try:
             table_df = extract_table_from_excel(self.file_path)
             print(table_df)
-            
-            check_date_list = ['trade_date', 'TransactionDate', 'Date', 'TD']
-            check_time_list = ['time', 'Activity Time']
-            check_symbol_list = ['instrument.cns_equity_master.symbol', 'Symbol']
-            check_quantity_list = ['quantity', 'Quantity']
-            check_price_list = ['price', 'Price']
-            check_commission_list = ['fee_commission', 'Commission', 'Fees & Comm']
-            check_action_list = ['side_direction', 'TransactionType', 'Action', 'Transaction']
-            complete_column(table_df, check_date_list, clean_date_format, 1)
-            complete_column(table_df, check_time_list, clean_time_format, 2)
-            complete_column(table_df, check_symbol_list, clean_symbol_format, 3)
-            complete_column(table_df, check_quantity_list, clean_quantity_format, 4)
-            complete_column(table_df, check_price_list, clean_price_format, 5)
-            complete_column(table_df, check_commission_list, clean_commission_format, 6)
-            complete_column(table_df, check_action_list, clean_action_format, 7)
+
+            complete_column(table_df, self.column_list[0], clean_date_format, 1)
+            complete_column(table_df, self.column_list[1], clean_time_format, 2)
+            complete_column(table_df, self.column_list[2], clean_symbol_format, 3)
+            complete_column(table_df, self.column_list[3], clean_quantity_format, 4)
+            complete_column(table_df, self.column_list[4], clean_price_format, 5)
+            complete_column(table_df, self.column_list[5], clean_commission_format, 6)
+            complete_column(table_df, self.column_list[6], clean_action_format, 7)
             
             output_file_path = self.output_file_name + ".xlsx"
             wb.save(output_file_path)
@@ -74,10 +68,10 @@ class MainWindow(QMainWindow):
             QMessageBox.warning(self, "Warning", "Please import an Excel or CSV file.")
             return
         
-        self.file_path = self.ui.files.item(0).text()
+        file_path = self.ui.files.item(0).text()
         
         # Check if the file is an Excel or CSV file
-        if not (self.file_path.endswith('.xlsx') or self.file_path.endswith('.xls') or self.file_path.endswith('.csv')):
+        if not (file_path.endswith('.xlsx') or file_path.endswith('.xls') or file_path.endswith('.csv')):
             QMessageBox.warning(self, "Warning", "Unsupported file type! Please import an Excel or CSV file.")
             self.ui.files.clear()
             return
@@ -86,14 +80,17 @@ class MainWindow(QMainWindow):
             QMessageBox.warning(self, "Warning", "Please enter the output file name !")
             return
 
-        self.output_file_name = self.ui.output_name.text()
+        output_file_name = self.ui.output_name.text()
         
         self.ui.convert_btn.setEnabled(False)
         self.ui.import_btn.setEnabled(False)
 
         sleep(1)
 
-        self.worker = Worker(self.file_path, self.output_file_name)
+        column_list = [self.ui.date_column.text(), self.ui.time_column.text(), self.ui.symbol_column.text(), self.ui.quantity_column.text(), self.ui.price_column.text(), self.ui.commission_column.text(), self.ui.action_column.text()]
+        print(column_list)
+
+        self.worker = Worker(file_path, output_file_name, column_list)
         self.worker.finished.connect(self.on_finished)
         self.worker.alert_signal.connect(self.show_alert)
         self.worker.start()
@@ -102,6 +99,13 @@ class MainWindow(QMainWindow):
         # Clear all items in the QListWidget
         self.ui.files.clear()
         self.ui.output_name.clear()
+        self.ui.date_column.clear()
+        self.ui.time_column.clear()
+        self.ui.symbol_column.clear()
+        self.ui.quantity_column.clear()
+        self.ui.price_column.clear()
+        self.ui.commission_column.clear()
+        self.ui.action_column.clear()
 
         self.ui.convert_btn.setEnabled(True)
         self.ui.import_btn.setEnabled(True)
