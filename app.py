@@ -1,7 +1,7 @@
 import sys
-from PyQt6 import uic
-from PyQt6.QtCore import QThread, pyqtSignal
-from PyQt6.QtWidgets import QMainWindow, QApplication, QFileDialog, QMessageBox
+from PyQt5 import uic
+from PyQt5.QtCore import QThread, pyqtSignal
+from PyQt5.QtWidgets import QMainWindow, QApplication, QFileDialog, QMessageBox
 from detect import *
 from time import sleep
 

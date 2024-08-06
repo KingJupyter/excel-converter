@@ -24,9 +24,9 @@
   <widget class="QPushButton" name="convert_btn">
    <property name="geometry">
     <rect>
-     <x>280</x>
+     <x>270</x>
      <y>510</y>
-     <width>141</width>
+     <width>161</width>
      <height>51</height>
     </rect>
    </property>
@@ -44,9 +44,9 @@
   <widget class="QPushButton" name="close_btn">
    <property name="geometry">
     <rect>
-     <x>490</x>
+     <x>480</x>
      <y>510</y>
-     <width>131</width>
+     <width>141</width>
      <height>51</height>
     </rect>
    </property>
@@ -66,7 +66,7 @@
     <rect>
      <x>60</x>
      <y>510</y>
-     <width>141</width>
+     <width>161</width>
      <height>51</height>
     </rect>
    </property>
@@ -167,7 +167,7 @@
    <property name="title">
     <string>Column Name</string>
    </property>
-   <widget class="QWidget" name="">
+   <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
       <x>20</x>
