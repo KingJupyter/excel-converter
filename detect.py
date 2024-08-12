@@ -59,14 +59,61 @@ def clean_time_format(time_string):
     except ValueError:
         return "Invalid time format"
 
+def clean_date_format_symbol(date_string):
+    if "as of" in date_string:
+        date_string = date_string.split(" as of ")[1].replace(' ', '')
+    
+    formats = [
+        "%Y-%m-%d",        # e.g., 2024-07-31
+        "%d-%m-%Y",        # e.g., 31-07-2024
+        "%m/%d/%Y",        # e.g., 12/27/2024
+        "%Y/%m/%d",        # e.g., 2024/07/31
+        "%d/%m/%Y"         # e.g., 31/07/2024
+    ]
+    
+    for fmt in formats:
+        try:
+            date_object = datetime.strptime(date_string, fmt)
+            return date_object.strftime('%d %b %y')
+        except:
+            continue
+    
+    # Handle ISO 8601 format
+    try:
+        date_object = datetime.fromisoformat(date_string)
+        return date_object.strftime('%d %b %y')
+    except:
+        pass
+    
+    # Handle other ISO 8601 formats using dateutil.parser
+    try:
+        date_object = parser.isoparse(date_string)
+        return date_object.strftime('%d %b %y')
+    except:
+        pass
+
 def clean_symbol_format(symbol_string):
     if symbol_string == 'nan':
         return ''
-    
-    if symbol_string.isupper():
-        return symbol_string
-    else:
+
+    if len(symbol_string.split(" ")) != 4:
         return symbol_string.upper()
+    else:
+        symbol = symbol_string.split(" ")[0].upper()
+
+        symbol_date = clean_date_format_symbol(symbol_string.split(" ")[1])
+        
+        if "$" in symbol_string.split(" ")[2]:
+            strike_price = symbol_string.split(" ")[2].replace(",", "")
+        else:
+            strike_price = "$" + symbol_string.split(" ")[2].replace(",", "")
+        
+        if symbol_string.split(" ")[-1] == "C":
+            type = "Call"
+        else:
+            type = "Put"
+        
+        return " ".join([symbol, symbol_date, strike_price, type])
 
 def clean_quantity_format(quantity_string):
     if quantity_string == 'nan':
@@ -81,14 +128,14 @@ def clean_price_format(price_string):
     if price_string == 'nan':
         return ''
     
-    remove_currency = price_string.replace("$", "")
+    remove_currency = price_string.replace("$", "").replace(",", "").replace(" ", "")
     return f"{float(remove_currency):.2f}"
 
 def clean_commission_format(commission_string):
     if commission_string == 'nan':
         return ''
     
-    remove_currency = commission_string.replace("$", "")
+    remove_currency = commission_string.replace("$", "").replace(",", "").replace(" ", "")
     return f"{float(remove_currency):.2f}"
 
 def clean_action_format(action_string):
